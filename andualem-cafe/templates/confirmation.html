@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed — Andualem Café & Restaurant{% endblock %}
+
+{% block content %}
+<section class="section confirmation-section">
+    <div class="container confirmation-inner">
+        <div class="confirmation-icon">&#10003;</div>
+        <h1 class="confirmation-title">Order Received!</h1>
+        <p class="confirmation-subtitle">
+            Thank you, <strong>{{ order.customer_name }}</strong>. Your order is being prepared.
+        </p>
+
+        <div class="confirmation-card">
+            <div class="confirmation-detail">
+                <span class="detail-label">Order #</span>
+                <span class="detail-value">{{ order.id }}</span>
+            </div>
+            <div class="confirmation-detail">
+                <span class="detail-label">Phone</span>
+                <span class="detail-value">{{ order.phone }}</span>
+            </div>
+            <div class="confirmation-detail">
+                <span class="detail-label">Total</span>
+                <span class="detail-value">${{ "%.2f" | format(order.total_price) }}</span>
+            </div>
+            {% if order.notes %}
+            <div class="confirmation-detail">
+                <span class="detail-label">Notes</span>
+                <span class="detail-value">{{ order.notes }}</span>
+            </div>
+            {% endif %}
+
+            <div class="confirmation-items">
+                <h3>Items Ordered</h3>
+                {% for item in order.items %}
+                <div class="conf-item-row">
+                    <span>{{ item.quantity }}x {{ item.name }}</span>
+                    <span>${{ "%.2f" | format(item.unit_price * item.quantity) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="pickup-notice confirmation-notice">
+            <strong>Pay cash when you pick up your order.</strong>
+            <p>We'll call you at {{ order.phone }} if we have any questions.</p>
+        </div>
+
+        <a href="{{ url_for('menu') }}" class="btn btn-primary" style="margin-top:2rem;">
+            Back to Menu
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Clear the cart after a successful order
+    localStorage.removeItem('andualem_cart');
+    if (typeof updateCartBadge === 'function') updateCartBadge();
+</script>
+{% endblock %}

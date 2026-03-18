@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Andualem Café & Restaurant — Authentic Ethiopian Food{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <h1 class="hero-title">Taste the Heart of Ethiopia</h1>
+        <p class="hero-subtitle">
+            Traditional stews, freshly baked injera, and coffee roasted the old way —
+            made for you, picked up fresh.
+        </p>
+        <div class="hero-actions">
+            <a href="{{ url_for('menu') }}" class="btn btn-primary">View Menu</a>
+            <a href="{{ url_for('checkout') }}" class="btn btn-outline">View Cart</a>
+        </div>
+    </div>
+</section>
+
+<section class="section how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">1</div>
+                <h3>Browse the Menu</h3>
+                <p>Explore our full menu of Ethiopian entrees, vegan dishes, appetizers, sides, and drinks.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">2</div>
+                <h3>Add to Cart</h3>
+                <p>Pick your favorites and add them to your cart. Adjust quantities any time.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">3</div>
+                <h3>Place Your Order</h3>
+                <p>Enter your name and phone number. We'll prepare your order and you pay cash on pickup.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section about-section">
+    <div class="container about-inner">
+        <div class="about-text">
+            <h2 class="section-title">Our Story</h2>
+            <p>
+                Andualem Café &amp; Restaurant brings the warmth and bold flavors of
+                Ethiopian home cooking to your table. Every dish is prepared with
+                traditional spice blends and care — from our rich Doro Wot to our
+                freshly made Sambusa.
+            </p>
+            <p>
+                We serve cash-only, pickup orders because we believe great food
+                doesn't need to be complicated. Order online, swing by, and eat well.
+            </p>
+            <a href="{{ url_for('menu') }}" class="btn btn-primary" style="margin-top: 1.5rem;">
+                See the Full Menu
+            </a>
+        </div>
+        <div class="about-image">
+            <img
+                src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=80"
+                alt="Ethiopian food spread"
+                loading="lazy"
+            />
+        </div>
+    </div>
+</section>
+
+<section class="section cta-section">
+    <div class="container cta-inner">
+        <h2>Ready to order?</h2>
+        <p>Browse our menu, fill your cart, and place your pickup order in minutes.</p>
+        <a href="{{ url_for('menu') }}" class="btn btn-primary btn-lg">Order Now</a>
+    </div>
+</section>
+{% endblock %}

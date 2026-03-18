@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Apply — Andualem Café & Restaurant{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1 class="page-title">Get in Touch</h1>
+        <p class="page-subtitle">Interested in joining our team, catering, or another inquiry? Let us know!</p>
+    </div>
+</section>
+
+<section class="section apply-section">
+    <div class="container apply-layout">
+
+        <div class="apply-info">
+            <h2>We'd Love to Hear From You</h2>
+            <p>Whether you're looking to join our kitchen team, interested in catering for an event, or have a general question — fill out the form and we'll be in touch.</p>
+            <ul class="apply-list">
+                <li>Kitchen staff &amp; servers</li>
+                <li>Catering inquiries</li>
+                <li>General questions</li>
+            </ul>
+        </div>
+
+        <div class="apply-form-panel">
+            {% if success %}
+            <div class="alert alert-success">
+                <strong>Application received!</strong> We'll review it and get back to you soon.
+            </div>
+            {% else %}
+
+            {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+
+            <form action="{{ url_for('submit_application') }}" method="POST" novalidate>
+                <!-- Honeypot -->
+                <div style="display:none;" aria-hidden="true">
+                    <label for="website">Leave this blank</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label for="full_name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="full_name" name="full_name" placeholder="Your full name" required autocomplete="name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="optional">(optional)</span></label>
+                    <input type="tel" id="phone" name="phone" placeholder="(312) 555-0100" autocomplete="tel" />
+                </div>
+
+                <div class="form-group">
+                    <label for="position">Reason for Inquiry <span class="required">*</span></label>
+                    <select id="position" name="position" required>
+                        <option value="" disabled selected>Select one</option>
+                        <option value="Kitchen Staff">Kitchen Staff</option>
+                        <option value="Server / Front of House">Server / Front of House</option>
+                        <option value="Catering Inquiry">Catering Inquiry</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message <span class="optional">(optional)</span></label>
+                    <textarea id="message" name="message" rows="4" placeholder="Tell us a bit about yourself or your request..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-full">Submit</button>
+            </form>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

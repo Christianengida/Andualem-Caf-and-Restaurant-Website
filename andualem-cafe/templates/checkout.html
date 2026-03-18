@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Checkout — Andualem Café & Restaurant{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1 class="page-title">Your Cart</h1>
+        <p class="page-subtitle">Review your order, then place it for pickup.</p>
+    </div>
+</section>
+
+<section class="section checkout-section">
+    <div class="container checkout-layout">
+
+        <!-- Cart Summary -->
+        <div class="cart-panel">
+            <h2 class="panel-title">Order Summary</h2>
+            <div id="cart-empty" class="empty-state" style="display:none;">
+                <p>Your cart is empty.</p>
+                <a href="{{ url_for('menu') }}" class="btn btn-primary" style="margin-top:1rem;">Browse Menu</a>
+            </div>
+            <div id="cart-items"></div>
+            <div id="cart-total-row" class="cart-total-row" style="display:none;">
+                <span>Total</span>
+                <span id="cart-total-display">$0.00</span>
+            </div>
+            <a href="{{ url_for('menu') }}" class="btn btn-outline btn-sm" style="margin-top:1rem;">
+                + Add More Items
+            </a>
+        </div>
+
+        <!-- Order Form -->
+        <div class="order-form-panel">
+            <h2 class="panel-title">Your Info</h2>
+
+            {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+
+            <form id="order-form" action="{{ url_for('submit_order') }}" method="POST" novalidate>
+                <!-- Honeypot — hidden from real users, bots fill it -->
+                <div style="display:none;" aria-hidden="true">
+                    <label for="website">Leave this blank</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <!-- Hidden cart data populated by JS -->
+                <input type="hidden" name="cart_data" id="cart-data-input" value="[]" />
+
+                <div class="form-group">
+                    <label for="customer_name">Full Name <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        id="customer_name"
+                        name="customer_name"
+                        placeholder="Your name"
+                        required
+                        autocomplete="name"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="e.g. (312) 555-0100"
+                        required
+                        autocomplete="tel"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Special Requests <span class="optional">(optional)</span></label>
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        rows="3"
+                        placeholder="Spice level, allergies, substitutions..."
+                    ></textarea>
+                </div>
+
+                <div class="pickup-notice">
+                    <strong>Pickup &amp; Cash Only</strong>
+                    <p>We'll prepare your order and you pay cash when you pick it up. We'll call you if there are any questions.</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-full" id="place-order-btn">
+                    Place Order
+                </button>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    renderCheckoutCart();
+
+    document.getElementById('order-form').addEventListener('submit', function (e) {
+        const cart = getCart();
+        if (cart.length === 0) {
+            e.preventDefault();
+            alert('Your cart is empty. Please add items before placing an order.');
+            return;
+        }
+        document.getElementById('cart-data-input').value = JSON.stringify(cart);
+    });
+});
+
+function renderCheckoutCart() {
+    const cart = getCart();
+    const itemsEl = document.getElementById('cart-items');
+    const emptyEl = document.getElementById('cart-empty');
+    const totalRow = document.getElementById('cart-total-row');
+    const totalDisplay = document.getElementById('cart-total-display');
+    const placeBtn = document.getElementById('place-order-btn');
+
+    if (cart.length === 0) {
+        emptyEl.style.display = 'block';
+        totalRow.style.display = 'none';
+        placeBtn.disabled = true;
+        placeBtn.classList.add('btn-disabled');
+        return;
+    }
+
+    emptyEl.style.display = 'none';
+    totalRow.style.display = 'flex';
+    placeBtn.disabled = false;
+    placeBtn.classList.remove('btn-disabled');
+
+    let total = 0;
+    itemsEl.innerHTML = '';
+
+    cart.forEach(function (item) {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+
+        const row = document.createElement('div');
+        row.className = 'cart-item-row';
+        row.innerHTML = `
+            <div class="cart-item-info">
+                <span class="cart-item-name">${escapeHtml(item.name)}</span>
+                <span class="cart-item-unit-price">$${item.price.toFixed(2)} each</span>
+            </div>
+            <div class="cart-item-controls">
+                <button class="qty-btn" onclick="changeQty(${item.id}, -1)" aria-label="Decrease">&#8722;</button>
+                <span class="qty-display">${item.quantity}</span>
+                <button class="qty-btn" onclick="changeQty(${item.id}, 1)" aria-label="Increase">&#43;</button>
+            </div>
+            <div class="cart-item-subtotal">$${subtotal.toFixed(2)}</div>
+            <button class="remove-btn" onclick="removeItem(${item.id})" aria-label="Remove ${escapeHtml(item.name)}">&#10005;</button>
+        `;
+        itemsEl.appendChild(row);
+    });
+
+    totalDisplay.textContent = '$' + total.toFixed(2);
+}
+
+function changeQty(id, delta) {
+    const cart = getCart();
+    const idx = cart.findIndex(i => i.id === id);
+    if (idx === -1) return;
+    cart[idx].quantity += delta;
+    if (cart[idx].quantity <= 0) {
+        cart.splice(idx, 1);
+    }
+    saveCart(cart);
+    renderCheckoutCart();
+    updateCartBadge();
+}
+
+function removeItem(id) {
+    const cart = getCart().filter(i => i.id !== id);
+    saveCart(cart);
+    renderCheckoutCart();
+    updateCartBadge();
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Menu — Andualem Café & Restaurant{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1 class="page-title">Our Menu</h1>
+        <p class="page-subtitle">Fresh, authentic Ethiopian food. Cash on pickup.</p>
+    </div>
+</section>
+
+<section class="section menu-section">
+    <div class="container">
+        {% if categories %}
+            {% for category, items in categories.items() %}
+            <div class="menu-category" id="cat-{{ category | lower | replace(' ', '-') }}">
+                <h2 class="category-title">{{ category }}</h2>
+                <div class="menu-grid">
+                    {% for item in items %}
+                    <div class="menu-card" data-id="{{ item.id }}">
+                        <div class="menu-card-image">
+                            {% if item.image_url %}
+                            <img
+                                src="{{ item.image_url }}"
+                                alt="{{ item.name }}"
+                                loading="lazy"
+                            />
+                            {% else %}
+                            <div class="menu-card-placeholder">No image</div>
+                            {% endif %}
+                        </div>
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <h3 class="menu-card-name">{{ item.name }}</h3>
+                                <span class="menu-card-price">${{ "%.2f" | format(item.price) }}</span>
+                            </div>
+                            {% if item.description %}
+                            <p class="menu-card-desc">{{ item.description }}</p>
+                            {% endif %}
+                            <button
+                                class="btn btn-primary btn-sm add-to-cart"
+                                data-id="{{ item.id }}"
+                                data-name="{{ item.name }}"
+                                data-price="{{ item.price }}"
+                                onclick="addToCart({{ item.id }}, '{{ item.name | replace("'", "\\'") }}', {{ item.price }})"
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No menu items available right now. Check back soon!</p>
+        {% endif %}
+    </div>
+</section>
+
+<div class="cart-toast" id="cart-toast" aria-live="polite"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function addToCart(id, name, price) {
+    cartAddItem(id, name, price);
+    showToast(name + ' added to cart!');
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('cart-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+</script>
+{% endblock %}

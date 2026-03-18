@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Andualem Café & Restaurant{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{{ url_for('home') }}" class="logo">
+                Andualem Café &amp; Restaurant
+            </a>
+            <nav class="nav">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('menu') }}" class="nav-link">Menu</a>
+                <a href="{{ url_for('apply') }}" class="nav-link">Apply</a>
+                <a href="{{ url_for('checkout') }}" class="nav-link cart-link" aria-label="Cart">
+                    <span class="cart-icon">&#128722;</span>
+                    <span class="cart-badge" id="cart-badge" style="display:none;">0</span>
+                </a>
+            </nav>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <nav class="mobile-nav" id="mobile-nav">
+            <a href="{{ url_for('home') }}" class="mobile-nav-link">Home</a>
+            <a href="{{ url_for('menu') }}" class="mobile-nav-link">Menu</a>
+            <a href="{{ url_for('checkout') }}" class="mobile-nav-link">Cart (<span id="mobile-cart-count">0</span>)</a>
+            <a href="{{ url_for('apply') }}" class="mobile-nav-link">Apply</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <span class="footer-logo">Andualem Café &amp; Restaurant</span>
+                <p class="footer-tagline">Authentic Ethiopian flavors, made with love.</p>
+            </div>
+            <div class="footer-info">
+                <p>Cash payment on pickup</p>
+                <p>Questions? Call us or email andualemcafe@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Andualem Café &amp; Restaurant. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
